@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-llvm-mc --triple=riscv32 --assemble --filetype=obj std.s -o target/std
+llvm-mc --triple=riscv32 -mattr=+m --assemble --filetype=obj std.s -o target/std
 
 mkdir -p target
 for file in *.asm; do
