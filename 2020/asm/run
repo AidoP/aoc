@@ -1,0 +1,2 @@
+#!/bin/sh
+./vm/target/release/vm "$1"
