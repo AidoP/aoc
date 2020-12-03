@@ -73,6 +73,46 @@ parse_uint:
         sub a1, t4, t5
         ret
 
+# Write an unsigned integer as a string. A 32bit unsigned integer has at most 10 decimal digits
+# a0 - The integer to convert to a string
+# a1 - a pointer to 11 bytes to output the string to
+.global format_uint
+format_uint:
+    li t0, 1000000000
+    li t1, 10 # constant 10
+    li t2, 1 # constant 1
+    li t5, 0 # true if zeroes should not be ignored
+    0:
+        # Get digit and remove from number
+        div t3, a0, t0
+        mul t4, t3, t0
+        sub a0, a0, t4
+
+        # If digit is 0 branch, otherwise ensure branch always returns
+        beqz t3, 3f
+        li t5, 1
+    1:
+        # Write to then increment string pointer
+        addi t3, t3, '0'
+        sb t3, 0(a1)
+        addi a1, a1, 1
+    2:
+        # If last digit, return
+        beq t0, t2, 4f
+        # Divide by 10 for next digit
+        div t0, t0, t1
+        # loop
+        j 0b
+    3:
+        # If digit is 0 but it is not a leading 0, continue writing to string
+        bnez t5, 1b
+        # Else, loop to the next digit
+        j 2b
+    4:
+        # Ensure null-terminated
+        sb zero, 0(a1)
+    ret
+
 # Exit the program
 # a0 - exit code
 .global exit
