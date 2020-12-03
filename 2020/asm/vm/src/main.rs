@@ -76,7 +76,7 @@ fn main() {
     let mut mmu = Mmu::new(1024 * 1024 * 8, &program).expect("Unable to load program");
     let mut core = rysk_core::Core::<Register32>::new(Mmu::ROM_START, 0);
     while mmu.exit_code == None {
-        core.execute(&mut mmu)
+        core.execute(&mut mmu);
     }
     std::process::exit(mmu.exit_code.unwrap() as _)
 }

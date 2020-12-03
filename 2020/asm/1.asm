@@ -1,31 +1,66 @@
 .global main
 
-times:
-    .string " * "
-equals:
-    .string " = "
-
 main:
     li s0, -1
     li s1, -1
 
     # allocate persistent stacks for 2 iterators
-    addi sp, sp, -24
+    addi sp, sp, -32
     mv a0, sp
-    call init_iter_input
-    addi a0, sp, 12
     call init_iter_input
 
     0:
         mv a0, sp
         call iter_input
+
         li t0, -1
         beq a0, t0, 1f
-        lla a1, number_str
-        call format_uint
-        call println
-        j 0b
+        mv s0, a0
+
+        addi a0, sp, 16
+        call init_iter_input
+        10:
+            addi a0, sp, 16
+            call iter_input
+
+            li t0, -1
+            beq a0, t0, 0b
+            mv s1, a0
+
+            li t0, 2020
+            add t1, s0, s1
+            beq t0, t1, 2f
+            mv s2, t1
+
+
+
+            mv a0, s0
+            lla a1, number_str
+            call format_uint
+            lla a0, number_str
+            call print
+            lla a0, times
+            call print
+            mv a0, s1
+            lla a1, number_str
+            call format_uint
+            lla a0, number_str
+            call print
+            lla a0, equals
+            call print
+            mv a0, s2
+            lla a1, number_str
+            call format_uint
+            lla a0, number_str
+            call println
+
+            j 10b
     1:
+        lla a0, sum_error
+        call println
+        li a0, 1
+        call exit
+    2:
 
     li a0, 420
     lla a1, number_str
@@ -63,10 +98,12 @@ init_iter_input:
 # a0 - the integer parsed from the input, or -1 if EOF
 iter_input:
     # Change stack space to the persistent memory segment
+    mv t0, s0
     mv s0, sp
     mv sp, a0
-    # Store return address
+    # Store return address and s0
     sw ra, 8(sp)
+    sw t0, 12(sp)
     
     # Load registers from the stack
     lw t0, 0(sp)
@@ -100,11 +137,20 @@ iter_input:
     sw t0, 0(sp)
     sw t1, 4(sp)
 
+    # Restore return address and s0
+    lw ra, 8(sp)
+    lw s0, 12(sp)
     # Restore the stack
     mv sp, s0
-    # Restore return address
-    lw ra, 8(sp)
     ret
+
+.section .rodata
+times:
+    .string " * "
+equals:
+    .string " = "
+sum_error:
+    .string "Unable to find 2 values that sum to 2020 this dataset"
 
 .section bss
 number_str: .zero 11

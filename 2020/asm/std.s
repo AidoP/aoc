@@ -125,6 +125,6 @@ exit:
 .section .text.entry
 .global entry
 entry:
-    li sp, 0x07FFFFC
+    li sp, 0x07FFFF8
     call main
     ret
