@@ -12,11 +12,13 @@ struct Mmu {
 }
 impl Mmu {
     const MEMORY_START: u32 = 0;
-    const MEMORY_END: u32 = Self::MEMORY_START + 1024 * 1024 * 128;
+    const MEMORY_END: u32 = Self::MEMORY_START + 1024 * 1024 * 128 - 1;
     const ROM_START: u32 = Self::MEMORY_END + 1;
-    const ROM_END: u32 = Self::ROM_START + 1024 * 1024 * 128;
-    const INPUT_START: u32 = Self::ROM_END + 1;
-    const INPUT_END: u32 = Self::INPUT_START + 1024 * 1024 * 8;
+    const ROM_END: u32 = Self::ROM_START + 1024 * 1024 * 128 - 1;
+    const INPUT_SIZE_START: u32 = Self::ROM_END + 1;
+    const INPUT_SIZE_END: u32 = Self::INPUT_SIZE_START + 3;
+    const INPUT_START: u32 = Self::INPUT_SIZE_END + 1;
+    const INPUT_END: u32 = Self::INPUT_START + 1024 * 1024 * 8 - 4;
     const SHUTDOWN: u32 = u32::MAX;
     const STDIN: u32 = u32::MAX - 3;
     const STDOUT: u32 = u32::MAX - 2;
@@ -47,6 +49,7 @@ impl rysk_core::Mmu<Register32> for Mmu {
         match index {
             Self::MEMORY_START..=Self::MEMORY_END => *self.memory.get(index as usize).expect("Read of unallocated memory"),
             Self::ROM_START..=Self::ROM_END => *self.program.get((index - Self::ROM_START) as usize ).expect("Read outside of program memory"),
+            Self::INPUT_SIZE_START..=Self::INPUT_SIZE_END => (self.input.len() as u32).to_le_bytes()[index as usize - Self::INPUT_SIZE_START as usize],
             Self::INPUT_START..=Self::INPUT_END => *self.input.get((index - Self::INPUT_START) as usize ).expect("Read outside of input file memory"),
             Self::STDIN => {
                 let mut input = [0; 1];

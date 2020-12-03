@@ -3,7 +3,7 @@ stdout = 0xFFFFFFFD
 stderr = 0xFFFFFFFE
 shutdown = 0xFFFFFFFF
 .global input
-input = 0x10000001
+input = 0x10000000
 
 # Print a character
 # a0 - character to print
@@ -45,6 +45,7 @@ println:
 
 # Get an unsigned integer from a string
 # a0 - string to parse from
+# a1 - the terminator
 # returns
 # a0 - the integer
 # a1 - the number of characters parsed
@@ -55,11 +56,12 @@ parse_uint:
     li t3, 10
     mv t4, a0
     mv t5, t4
+    mv t6, a1
     addi a0, zero, 0
     0:
         lb t0, 0(t4)
-        beqz t0, 3f
-        ble t0, t1, 2f
+        beq t0, t6, 3f
+        blt t0, t1, 2f
         bgt t0, t2, 2f
         addi t0, t0, -0x30 # subtract '0'
         mul a0, a0, t3
@@ -123,5 +125,6 @@ exit:
 .section .text.entry
 .global entry
 entry:
+    li sp, 0x07FFFFC
     call main
     ret
