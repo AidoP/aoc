@@ -1,6 +1,10 @@
 .global main
 
-main:
+part1:
+    addi sp, sp, -12
+    sw s0, 0(sp)
+    sw s1, 4(sp)
+    sw ra, 8(sp)
     li s0, -1
     li s1, -1
 
@@ -33,14 +37,10 @@ main:
 
             j 10b
     1:
-        lla a0, sum_error
+        lla a0, p1_error
         call println
-        li a0, 1
-        call exit
+        j 3f
     2:
-
-    # Calculate the answer
-    mul s2, s0, s1
     
     # Print the answer
     mv a0, s0
@@ -57,12 +57,126 @@ main:
     call print
     lla a0, equals
     call print
-    mv a0, s2
+
+    # Calculate the answer
+    mul a0, s0, s1
+
     lla a1, number_str
     call format_uint
     lla a0, number_str
     call println
 
+    3:
+    # Clean up and return
+    addi sp, sp, 32
+    lw s0, 0(sp)
+    lw s1, 4(sp)
+    lw ra, 8(sp)
+    addi sp, sp, 12
+    ret
+
+part2:
+    addi sp, sp, -16
+    sw s0, 0(sp)
+    sw s1, 4(sp)
+    sw s2, 8(sp)
+    sw ra, 12(sp)
+    li s0, -1
+    li s1, -1
+
+    # allocate persistent stacks for 2 iterators
+    addi sp, sp, -48
+    mv a0, sp
+    call init_iter_input
+
+    0:
+        mv a0, sp
+        call iter_input
+
+        li t0, -1
+        beq a0, t0, 1f
+        mv s0, a0
+
+        addi a0, sp, 16
+        call init_iter_input
+        10:
+            addi a0, sp, 16
+            call iter_input
+
+            li t0, -1
+            beq a0, t0, 0b
+            mv s1, a0
+
+            addi a0, sp, 32
+            call init_iter_input
+            20:
+                addi a0, sp, 32
+                call iter_input
+
+                li t0, -1
+                beq a0, t0, 10b
+                mv s2, a0
+
+                li t0, 2020
+                add t1, s0, s1
+                add t1, t1, s2
+                beq t0, t1, 2f
+
+                j 20b
+
+            j 10b
+    1:
+        lla a0, p2_error
+        call println
+        j 3f
+    2:
+    
+    # Print the answer
+    mv a0, s0
+    lla a1, number_str
+    call format_uint
+    lla a0, number_str
+    call print
+    lla a0, times
+    call print
+    mv a0, s1
+    lla a1, number_str
+    call format_uint
+    lla a0, number_str
+    call print
+    lla a0, times
+    call print
+    mv a0, s2
+    lla a1, number_str
+    call format_uint
+    lla a0, number_str
+    call print
+    lla a0, equals
+    call print
+
+    # Calculate answer
+    mul a0, s0, s1
+    mul a0, a0, s2
+
+    lla a1, number_str
+    call format_uint
+    lla a0, number_str
+    call println
+
+    3:
+    # Clean up and return
+    addi sp, sp, 48
+    lw s0, 0(sp)
+    lw s1, 4(sp)
+    lw s2, 8(sp)
+    lw ra, 12(sp)
+    addi sp, sp, 16
+    ret
+
+
+main:
+    call part1
+    call part2
     li a0, 0
     call exit
 
@@ -134,8 +248,10 @@ times:
     .string " * "
 equals:
     .string " = "
-sum_error:
-    .string "Unable to find 2 values that sum to 2020 this dataset"
+p1_error:
+    .string "Unable to find 2 values that sum to 2020 in this dataset"
+p2_error:
+    .string "Unable to find 3 values that sum to 2020 in this dataset"
 
 .section bss
 number_str: .zero 11
