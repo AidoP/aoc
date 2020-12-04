@@ -6,7 +6,7 @@ llvm-mc --triple=riscv32 -mattr=+m --assemble --filetype=obj std.s -o target/std
 mkdir -p target
 for file in *.asm; do
     file="$(echo $file | sed 's/.asm//')"
-    llvm-mc --triple=riscv32 --assemble --filetype=obj $file.asm -o target/$file.o
+    llvm-mc --triple=riscv32 -mattr=+m --assemble --filetype=obj $file.asm -o target/$file.o
     ld.lld link.ld target/$file.o target/std -o target/$file.o
     llvm-objcopy -O binary target/$file.o target/$file
 done

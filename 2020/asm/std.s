@@ -108,6 +108,8 @@ format_uint:
     3:
         # If digit is 0 but it is not a leading 0, continue writing to string
         bnez t5, 1b
+        # If the last digit, ie. the number is zero, continue writing to the string
+        beq t0, t2, 1b
         # Else, loop to the next digit
         j 2b
     4:

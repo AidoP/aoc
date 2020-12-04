@@ -30,29 +30,6 @@ main:
             li t0, 2020
             add t1, s0, s1
             beq t0, t1, 2f
-            mv s2, t1
-
-
-
-            mv a0, s0
-            lla a1, number_str
-            call format_uint
-            lla a0, number_str
-            call print
-            lla a0, times
-            call print
-            mv a0, s1
-            lla a1, number_str
-            call format_uint
-            lla a0, number_str
-            call print
-            lla a0, equals
-            call print
-            mv a0, s2
-            lla a1, number_str
-            call format_uint
-            lla a0, number_str
-            call println
 
             j 10b
     1:
@@ -62,23 +39,30 @@ main:
         call exit
     2:
 
-    li a0, 420
+    # Calculate the answer
+    mul s2, s0, s1
+    
+    # Print the answer
+    mv a0, s0
     lla a1, number_str
     call format_uint
     lla a0, number_str
     call print
-
     lla a0, times
     call print
-
-    li a0, 86
+    mv a0, s1
     lla a1, number_str
     call format_uint
     lla a0, number_str
     call print
-
     lla a0, equals
+    call print
+    mv a0, s2
+    lla a1, number_str
+    call format_uint
+    lla a0, number_str
     call println
+
     li a0, 0
     call exit
 
@@ -128,10 +112,10 @@ iter_input:
     addi t0, t0, -1
 
     j 2f
-
     1:
         li a0, -1
     2:
+
 
     # Save registers to the stack
     sw t0, 0(sp)
@@ -139,9 +123,10 @@ iter_input:
 
     # Restore return address and s0
     lw ra, 8(sp)
+    mv t0, s0
     lw s0, 12(sp)
     # Restore the stack
-    mv sp, s0
+    mv sp, t0
     ret
 
 .section .rodata
