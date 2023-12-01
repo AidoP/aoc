@@ -1,0 +1,37 @@
+{
+    "arch": "s390x",
+    "cpu": "z10",
+    "crt-static-respected": false,
+    "data-layout": "E-m:e-i1:8:16-i8:8:16-i64:64-f128:64-v128:64-a:8:16-n32:64",
+    "dynamic-linking": false,
+    "env": "none",
+    "features": "-vector",
+    "has-rpath": true,
+    "has-thread-local": false,
+    "llvm-target": "s390x-unknown-none-elf",
+    "max-atomic-width": 64,
+    "min-global-align": 16,
+    "os": "none",
+    "position-independent-executables": true,
+    "relro-level": "full",
+    "relocation-model": "static",
+    "stack-probes": {
+      "kind": "inline"
+    },
+    "supported-sanitizers": [
+      "address",
+      "leak",
+      "memory",
+      "thread"
+    ],
+    "supported-split-debuginfo": [
+      "packed",
+      "unpacked",
+      "off"
+    ],
+    "target-endian": "big",
+    "target-family": [
+      "none"
+    ],
+    "target-pointer-width": "64"
+}
